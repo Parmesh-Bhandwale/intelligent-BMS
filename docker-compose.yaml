@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: book_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - ollama
+
+  db:
+    image: postgres:15
+    container_name: book_db
+    environment:
+      POSTGRES_DB: bookdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - book_db_data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  book_db_data:
+  ollama_data:

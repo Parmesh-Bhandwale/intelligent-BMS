@@ -2,8 +2,8 @@ import uuid
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.db.models import Book
-from app.utils.exceptions import NotFoundException
+from app.model.models import Book
+from app.utils.exception import NotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -26,4 +26,16 @@ async def get_book_by_id(db: AsyncSession, book_id: str):
     if not book:
         logger.warning("Book not found")
         raise NotFoundException("Book not found")
+    return book
+
+async def update_book_summary(db: AsyncSession, book_id: str, summary: str):
+    logger.info(f"Updating summary for book {book_id}")
+    result = await db.execute(select(Book).where(Book.id == book_id))
+    book = result.scalar_one_or_none()
+    if not book:
+        logger.warning("Book not found for summary update")
+        raise NotFoundException("Book not found")
+    book.summary = summary
+    db.add(book)
+    await db.commit()
     return book

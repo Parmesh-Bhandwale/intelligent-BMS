@@ -4,8 +4,14 @@ import logging
 
 from app.core.logging import setup_logging
 from app.core.middleware import request_id_middleware
-from app.utils.exceptions import AppException
-from app.api.v1 import auth, books, reviews, recommendations
+from app.utils.exception import AppException
+from app.api.v1 import auth, books, review, recommandation
+from db.init_db import init_db_model
+
+from app.services.queue import worker
+import asyncio
+
+WORKERS = 1
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -25,14 +31,26 @@ async def app_exception_handler(request: Request, exc: AppException):
         content={"error": exc.message}
     )
 
+@app.on_event("startup")
+async def on_startup():
+    # create tables
+    await init_db_model()
+
+
+@app.on_event("startup")
+async def startup():
+
+    for i in range(WORKERS):
+        asyncio.create_task(worker(i+1))
+
 # Versioned API
 API_V1_PREFIX = "/api/v1"
 
 app.include_router(auth.router, prefix=f"{API_V1_PREFIX}/auth", tags=["Auth"])
 app.include_router(books.router, prefix=f"{API_V1_PREFIX}/books", tags=["Books"])
-app.include_router(reviews.router, prefix=f"{API_V1_PREFIX}/books", tags=["Reviews"])
+app.include_router(review.router, prefix=f"{API_V1_PREFIX}/books", tags=["Reviews"])
 app.include_router(
-    recommendations.router,
+    recommandation.router,
     prefix=f"{API_V1_PREFIX}",
     tags=["Recommendations"]
 )

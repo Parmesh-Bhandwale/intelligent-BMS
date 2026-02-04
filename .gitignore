@@ -1,7 +1,22 @@
-venv/
+# Byte-compiled / optimized files
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+
+# Test / coverage
 .pytest_cache/
-.DS_Store
+.coverage
+htmlcov/
+
+# Environments
+.env
+.venv/
+venv/
+
+# IDE
+.vscode/
 .idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
