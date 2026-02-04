@@ -1,4 +1,4 @@
-Got it! I’ve cleaned up your Markdown, fixed typos, properly closed code blocks, and organized the steps clearly. Here’s a polished **`README.md`** for your dev deployment:
+Perfect! Here’s the updated **Deployment Guide** in proper Markdown with the Ollama model check and pull steps added:
 
 ````markdown
 # Book API - Development Deployment Guide
@@ -7,7 +7,7 @@ This guide explains how to quickly run the **Book API** locally.
 
 ---
 
-## 1️⃣ Prerequisites
+## 1️ Prerequisites
 
 - Docker ≥ 20.x  
 - Docker Compose ≥ 2.x  
@@ -55,23 +55,54 @@ From the project root, run:
 docker-compose up
 ```
 
-* API will be available at: `http://localhost:8000`
-* PostgreSQL at: `localhost:5432`
-* Ollama at: `http://localhost:11434`
+---
+
+## 4️⃣ Setup Ollama Model
+
+Once the Ollama server is up, check the list of locally available models:
+
+```bash
+curl http://localhost:11434/models
+```
+
+* If the response is empty or your model (`llama3`) is not listed, pull it manually:
+
+```bash
+ollama pull llama3
+```
+
+* Verify the model is loaded:
+
+```bash
+curl http://localhost:11434/models
+```
+
+Now the model is ready for inference.
 
 ---
 
-## 4️⃣ Stop / Down
+## 5️⃣ Stop / Down
 
-From the project root, run:
+Stop the services:
 
 ```bash
 docker-compose down
 ```
 
-Optional: Remove volumes as well:
+Optional: remove volumes if you want a clean start:
 
 ```bash
 docker-compose down -v
 ```
+
+---
+
+## ✅ Summary
+
+1. Build containers → `docker-compose build`
+2. Start services → `docker-compose up`
+3. Check/pull Ollama model → `curl ...` + `ollama pull`
+4. Stop services → `docker-compose down`
+5. Clean volumes (optional) → `docker-compose down -v`
+
 
