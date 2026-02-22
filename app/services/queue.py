@@ -1,8 +1,7 @@
 import asyncio
 import logging
-import db
-from db.session import AsyncSessionLocal
 
+from app.db.session import AsyncSessionLocal
 from app.services.ai_service import AIService
 from app.model.models import Book
 

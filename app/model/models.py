@@ -2,19 +2,20 @@ import uuid
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.model import Base
+from app.model.base import Base, TimestampMixin
 
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, nullable=False)
+    username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+    roles = Column(String, nullable=False)  # Store roles as a comma-separated string
 
 
-class Book(Base):
+class Book(Base, TimestampMixin):
     __tablename__ = "books"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

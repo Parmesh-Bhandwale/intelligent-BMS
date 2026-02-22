@@ -1,17 +1,43 @@
-from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+from uuid import UUID
+from app.schemas.common import BaseSchema
 
-class BookCreate(BaseModel):
+
+# ---------- Base ----------
+
+class BookBase(BaseSchema):
+
     title: str
     author: str
     genre: Optional[str] = None
     year_published: Optional[int] = None
-    content: str
-    summary: Optional[str] = None
-    
-class BookResponse(BookCreate):
-    id: int
-    summary: Optional[str]
+    content: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+
+# ---------- Requests ----------
+
+class BookCreate(BookBase):
+    pass
+
+
+class BookUpdate(BaseSchema):
+
+    title: Optional[str] = None
+    author: Optional[str] = None
+    genre: Optional[str] = None
+    year_published: Optional[int] = None
+    content: Optional[str] = None
+
+
+# ---------- Responses ----------
+
+class BookResponse(BookBase):
+
+    id: UUID
+    summary: Optional[str] = None
+
+
+class BookListResponse(BaseSchema):
+
+    total: int
+    items: List[BookResponse]

@@ -1,0 +1,58 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.6, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\parmeshwar.b\Documents\IBMS
+configfile: pytest.ini
+plugins: anyio-4.12.1, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 122 items
+
+tests\test_book_schema.py ............                                   [  9%]
+tests\test_book_service.py .............                                 [ 20%]
+tests\test_exception.py ..............                                   [ 31%]
+tests\test_rbac.py .....                                                 [ 36%]
+tests\test_recommendation_service.py ..................                  [ 50%]
+tests\test_review_schema.py ..............                               [ 62%]
+tests\test_review_service.py .......................                     [ 81%]
+tests\test_security.py .......................                           [100%]
+
+============================== warnings summary ===============================
+app\model\base.py:6
+  C:\Users\parmeshwar.b\Documents\IBMS\app\model\base.py:6: MovedIn20Warning: The ``declarative_base()`` function is now available as sqlalchemy.orm.declarative_base(). (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    Base = declarative_base()
+
+tests/test_book_schema.py::TestBookUpdate::test_exclude_unset_behaviour
+  C:\Users\parmeshwar.b\Documents\IBMS\tests\test_book_schema.py:76: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    d = u.dict(exclude_unset=True)
+
+tests/test_book_service.py::TestCreateBook::test_persists_and_returns_book
+tests/test_book_service.py::TestCreateBook::test_sets_all_optional_fields
+  C:\Users\parmeshwar.b\Documents\IBMS\app\services\book_service.py:15: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    book = Book(id=uuid.uuid4(), **data.dict())
+
+tests/test_book_service.py::TestUpdateBook::test_partial_update_title
+tests/test_book_service.py::TestUpdateBook::test_update_multiple_fields
+  C:\Users\parmeshwar.b\Documents\IBMS\app\services\book_service.py:53: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    for key, value in data.dict(exclude_unset=True).items():
+
+tests/test_review_service.py: 20 warnings
+  C:\Users\parmeshwar.b\Documents\IBMS\app\services\review_service.py:75: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    return ReviewResponse.from_orm(review)
+
+tests/test_review_service.py::TestGetReviewsByBook::test_returns_items
+tests/test_review_service.py::TestGetReviewsByBook::test_returns_items
+tests/test_review_service.py::TestGetReviewsByBook::test_pagination
+tests/test_review_service.py::TestGetReviewsByBook::test_pagination
+  C:\Users\parmeshwar.b\Documents\IBMS\app\services\review_service.py:129: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    "items": [ReviewResponse.from_orm(r) for r in reviews]
+
+tests/test_review_service.py::TestGetReviewById::test_found
+  C:\Users\parmeshwar.b\Documents\IBMS\app\services\review_service.py:157: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    return ReviewResponse.from_orm(review)
+
+tests/test_review_service.py::TestUpdateReview::test_update_text
+tests/test_review_service.py::TestUpdateReview::test_update_rating
+  C:\Users\parmeshwar.b\Documents\IBMS\app\services\review_service.py:210: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    return ReviewResponse.from_orm(review)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+====================== 122 passed, 33 warnings in 4.80s =======================

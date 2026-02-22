@@ -1,75 +1,61 @@
-import logging
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.book import BookCreate
-from app.services.book_service import (
-    create_book, get_all_books, get_book_by_id
-)
-from app.services.ai_service import AIService
-from db.session import get_db
-from app.services.queue import task_queue, task_status
-import uuid
-
-logger = logging.getLogger(__name__)
-router = APIRouter()
+from app.schemas import BookCreate, BookResponse, BookUpdate
+from app.services.book_service import *
+from app.core.deps import get_current_user
+from app.core.rbac import require_role
+from app.db.session import get_db
 
 
-# @router.post("/")
-# async def add_book(book: BookCreate, db: AsyncSession = Depends(get_db)):
-#     logger.info("POST /books")
-#     book.summary = await AIService().generate_book_summary(book.title, book.content)
-#     book = await create_book(db, book)
-#     return book
+router = APIRouter(prefix="/books", tags=["Books"])
 
-@router.get("/")
-async def list_books(db: AsyncSession = Depends(get_db)):
-    logger.info("GET /books")
+
+# POST /books — any authenticated user
+@router.post("/", response_model=BookResponse)
+async def add_book(
+    book: BookCreate,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(require_role("admin", "user")),
+):
+    return await create_book(db, book)
+
+
+# GET /books — any authenticated user
+@router.get("/",response_model=list[BookResponse])
+async def get_books(
+    db: AsyncSession = Depends(get_db),
+    user=Depends(require_role("admin", "user")),
+):
     return await get_all_books(db)
 
-@router.get("/{book_id}")
-async def get_book(book_id: str, db: AsyncSession = Depends(get_db)):
-    logger.info(f"GET /books/{book_id}")
+
+# GET /books/{id} — any authenticated user
+@router.get("/{book_id}",response_model=BookResponse)
+async def get_book(
+    book_id: str,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(require_role("admin", "user")),
+):
     return await get_book_by_id(db, book_id)
 
-@router.post("/books/summarize")
-async def summarize_book(
-    title: str,
-    content: str
+
+# PUT /books/{id} — admin only
+@router.put("/{book_id}")
+async def update_book_api(
+    book_id: str,
+    book: BookUpdate,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(require_role("admin")),
 ):
-    logger.info("POST /books/summarize")
-    ai_service = AIService()
-    summary = await ai_service.generate_book_summary(title, content)
-    return {"title": title, "summary": summary}
+    return await update_book(db, book_id, book)
 
 
-@router.post("/add")
-async def create_book_endpoint(book: BookCreate, db: AsyncSession = Depends(get_db)):
-
-    logger.info("Creating new book")
-    db_book = await create_book(db, book)
-
-    # Queue summary job
-    task_id = str(uuid.uuid4())
-
-    task_status[task_id] = "queued"
-
-    await task_queue.put((task_id, db_book.id))
-
-    return {
-        "book_id": db_book.id,
-        "task_id": task_id,
-        "status": "summary queued"
-    }
-
-
-@router.get("/tasks/{task_id}")
-async def get_task_status(task_id: str):
-
-    status = task_status.get(task_id)
-
-    if not status:
-        return {"error": "Invalid task"}
-
-    return {"status": status}
-
+# DELETE /books/{id} — admin only
+@router.delete("/{book_id}")
+async def delete_book_api(
+    book_id: str,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(require_role("admin"))
+):
+    return await delete_book(db, book_id)
